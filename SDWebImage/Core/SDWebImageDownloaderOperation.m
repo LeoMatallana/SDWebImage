@@ -504,7 +504,18 @@ didReceiveResponse:(NSURLResponse *)response
             credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
             disposition = NSURLSessionAuthChallengeUseCredential;
         }
-    } else {
+    } 
+    
+    else if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodClientCertificate]) {
+        if (!(self.options & SDWebImageDownloaderAllowInvalidSSLCertificates)) {
+            disposition = NSURLSessionAuthChallengePerformDefaultHandling;
+        } else {
+            credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
+            disposition = NSURLSessionAuthChallengeUseCredential;
+        }
+    }
+
+    else {
         if (challenge.previousFailureCount == 0) {
             if (self.credential) {
                 credential = self.credential;
